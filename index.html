@@ -3,41 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cosmic Convergence</title>
+  <title>Promise Day with Moonlight</title>
   <style>
-    /* Basic Reset & Body Styling */
+    /* Basic Reset & Styling */
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #000;
       font-family: sans-serif;
       overflow: hidden;
     }
     .container {
       position: relative;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(ellipse at center, #000 0%, #111 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #fff;
+      height: 100%;
+      /* Dark background */
+      background: linear-gradient(45deg, #0d0d0d, #1a1a1a);
     }
-    /* Header, Message, and Progress Bar */
+    /* Moonlight Overlay: simulates a soft spotlight from the moon */
+    #moonlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(
+        circle at calc(100% - 80px) 80px,
+        rgba(255, 255, 200, 0.6),
+        transparent 60%
+      );
+      mix-blend-mode: screen;
+      z-index: 0;
+    }
+    /* Moon Styling */
+    .moon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
+      cursor: pointer;
+      transition: transform 1s ease;
+      /* Glowing effect */
+      box-shadow: 0 0 30px 10px rgba(255,255,200,0.7);
+      z-index: 1;
+    }
+    /* Header & Progress */
     .header {
-      z-index: 10;
       text-align: center;
       margin-bottom: 20px;
-      transition: transform 1s ease, opacity 1s ease;
+      z-index: 2;
     }
     .title {
       font-size: 2.5rem;
-      margin: 0;
+      font-weight: bold;
+      color: #fff;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
     }
     .message {
       font-size: 1.25rem;
+      color: #bbb;
       margin-top: 10px;
     }
     .progress-container {
@@ -51,246 +87,360 @@
     .progress-bar {
       height: 100%;
       width: 0%;
-      background-color: #555;
-      transition: width 0.5s;
+      background-color: #888;
+      transition: width 0.5s ease-out, background-color 0.5s ease-out;
     }
-    /* Interactive Area */
+    /* Interactive Area & Hands */
     .interactive-area {
       position: relative;
       width: 90%;
       max-width: 800px;
       height: 400px;
-      background: transparent;
+      cursor: pointer;
       overflow: hidden;
-      z-index: 5;
+      z-index: 2;
     }
-    /* Stardust Cosmic Elements */
-    .cosmic {
+    .hand {
       position: absolute;
-      transition: transform 1s ease, opacity 1s ease;
-    }
-    #cosmic-left {
-      width: 200px;
-      height: 150px;
-      left: 5%;
       top: 50%;
-      transform: translate(-50%, -50%);
-      background: radial-gradient(ellipse at center, rgba(255,255,255,0.8), rgba(170,170,255,0) 70%);
-      clip-path: polygon(0% 50%, 20% 20%, 80% 10%, 100% 50%, 80% 90%, 20% 90%);
-      filter: blur(4px);
+      transform: translateY(-50%);
+      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
     }
-    #cosmic-right {
-      width: 200px;
-      height: 150px;
-      right: 5%;
-      top: 50%;
-      transform: translate(50%, -50%);
-      background: radial-gradient(ellipse at center, rgba(255,255,255,0.8), rgba(255,170,170,0) 70%);
-      clip-path: polygon(0% 50%, 20% 20%, 80% 10%, 100% 50%, 80% 90%, 20% 90%);
-      filter: blur(4px);
+    .left-hand {
+      left: 0;
     }
-    /* Moon positioned in upper left */
-    .moon {
+    .right-hand {
+      right: 0;
+    }
+    /* Sparkle Animation */
+    .sparkle {
       position: absolute;
-      width: 100px;
-      height: 100px;
       border-radius: 50%;
-      background: radial-gradient(circle, #fff, #ccc);
-      top: 10%;
-      left: 10%;
-      box-shadow: 0 0 20px 5px rgba(255,255,200,0.7);
-      transition: transform 1s ease, opacity 1s ease;
-      z-index: 6;
+      background-color: rgba(236, 72, 153, 0.3);
+      animation: ping 1s ease-out;
+      pointer-events: none;
     }
-    /* Blackhole */
-    .blackhole {
+    @keyframes ping {
+      0% { transform: scale(0.5); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+    /* Ripple Animation */
+    .ripple {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0);
-      width: 100px;
-      height: 100px;
       border-radius: 50%;
-      background: radial-gradient(circle, #000, #000 70%);
-      z-index: 20;
-      opacity: 0;
+      background-color: rgba(236, 72, 153, 0.3);
+      pointer-events: none;
+      animation: rippleAnim 0.6s ease-out;
     }
-    .blackhole.grow {
-      animation: growBlackhole 2s forwards;
+    @keyframes rippleAnim {
+      0% { transform: scale(0); opacity: 0.7; }
+      100% { transform: scale(4); opacity: 0; }
     }
-    @keyframes growBlackhole {
-      0% {
-        transform: translate(-50%, -50%) scale(0);
-        opacity: 0;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(5);
-        opacity: 1;
-      }
+    /* Celebration Overlay */
+    .celebration {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      background: rgba(0,0,0,0.7);
     }
-    /* Sucked-in Animation */
-    .sucked {
-      transform: translate(0, 0) scale(0);
-      opacity: 0;
+    .celebration .icon {
+      font-size: 3rem;
+      animation: bounce 1s infinite;
     }
-    /* Restart Button */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
     .restart-button {
-      position: absolute;
-      bottom: 20px;
-      z-index: 30;
+      margin-top: 20px;
       padding: 10px 20px;
       background: #ec4899;
+      color: white;
       border: none;
       border-radius: 20px;
-      color: #fff;
       cursor: pointer;
       transition: background 0.3s;
     }
     .restart-button:hover {
       background: #db2777;
     }
+    /* Confetti */
+    .confetti {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: fall linear infinite;
+      pointer-events: none;
+    }
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    /* Fade-in Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
   </style>
 </head>
 <body>
   <div class="container" id="container">
-    <div class="header" id="header">
-      <h1 class="title">Cosmic Convergence</h1>
-      <div class="message" id="message">
-        Click or press Space to begin the cosmic journey...
-      </div>
+    <!-- Moonlight Overlay -->
+    <div id="moonlight"></div>
+    <!-- Moon Element -->
+    <div id="moon" class="moon"></div>
+    <div class="header">
+      <div class="title">Promise Day</div>
+      <div class="message" id="message">Press Space or Click to begin your journey...</div>
       <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
       </div>
     </div>
     <div class="interactive-area" id="interactive-area">
-      <!-- Stardust cosmic elements -->
-      <div class="cosmic" id="cosmic-left"></div>
-      <div class="cosmic" id="cosmic-right"></div>
-      <!-- The Moon in the upper left -->
-      <div class="moon" id="moon"></div>
-      <!-- Blackhole element -->
-      <div class="blackhole" id="blackhole"></div>
+      <!-- Left Hand -->
+      <div class="hand left-hand" id="left-hand">
+        <svg width="150" height="150" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="handGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#9333EA" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#7C3AED" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <g class="hand-svg">
+            <path d="M10,50 Q20,50 30,50 L30,50" stroke="#9333EA" stroke-width="8" fill="none" />
+            <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient1)" />
+            <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient1)" />
+            <path d="M55,25 Q60,20 65,25 C70,35 75,45 70,65" fill="url(#handGradient1)" />
+            <path d="M65,30 Q70,25 75,30 C80,40 80,50 75,60" fill="url(#handGradient1)" />
+            <path d="M75,35 Q80,30 85,35 C85,40 85,45 80,55" fill="url(#handGradient1)" />
+          </g>
+        </svg>
+      </div>
+      <!-- Right Hand -->
+      <div class="hand right-hand" id="right-hand">
+        <svg width="150" height="150" viewBox="0 0 100 100">
+          <defs>
+            <linearGradient id="handGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#EC4899" stop-opacity="1"/>
+              <stop offset="100%" stop-color="#DB2777" stop-opacity="1"/>
+            </linearGradient>
+          </defs>
+          <g class="hand-svg">
+            <path d="M10,50 Q20,50 30,50 L30,50" stroke="#EC4899" stroke-width="8" fill="none" />
+            <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient2)" />
+            <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient2)" />
+            <path d="M55,25 Q60,20 65,25 C70,35 75,45 70,65" fill="url(#handGradient2)" />
+            <path d="M65,30 Q70,25 75,30 C80,40 80,50 75,60" fill="url(#handGradient2)" />
+            <path d="M75,35 Q80,30 85,35 C85,40 85,45 80,55" fill="url(#handGradient2)" />
+          </g>
+        </svg>
+      </div>
     </div>
-    <button class="restart-button" id="restart-button" style="display: none;">
-      Restart
-    </button>
+    <!-- Celebration Overlay -->
+    <div class="celebration animate-fade-in" id="celebration" style="display: none;">
+      <div class="icon" id="icon-heart">❤️</div>
+      <div class="icon" id="icon-sparkle">✨</div>
+      <div class="icon" id="icon-dazzle">💫</div>
+      <button class="restart-button" id="restart-button">Start Again</button>
+    </div>
   </div>
-  
+
   <script>
     // --- State Variables ---
     let clicks = 0;
     const maxClicks = 10;
+    let floatOffset = 0;
+    let isHovering = false;
+    let moonRotation = 0;
     const messages = [
-      "The cosmos stirs with ancient secrets...",
-      "Galaxies whisper as they drift apart...",
-      "Stardust begins to scatter in the void...",
-      "Cosmic energy flows like a river...",
-      "Nebulae shimmer with ephemeral light...",
-      "Celestial winds guide the particles...",
-      "A gravitational pull grows ever stronger...",
-      "Energy converges into a singular point...",
-      "A vortex of infinite power emerges...",
-      "The black hole consumes all, even the words..."
+      'Every journey begins with a single step...',
+      'Distance is just a test of love\'s strength...',
+      'Keep going, your love grows stronger...',
+      'The space between us grows smaller...',
+      'Each click bridges the gap...',
+      'Your hearts beat as one...',
+      'Almost there, feel the connection...',
+      'The promise strengthens...',
+      'One last step...',
+      'Together forever! ❤️'
     ];
-    
+
     // --- Element References ---
-    const header = document.getElementById('header');
+    const container = document.getElementById('container');
     const messageEl = document.getElementById('message');
     const progressBar = document.getElementById('progress-bar');
-    const cosmicLeft = document.getElementById('cosmic-left');
-    const cosmicRight = document.getElementById('cosmic-right');
-    const moon = document.getElementById('moon');
-    const blackhole = document.getElementById('blackhole');
-    const restartButton = document.getElementById('restart-button');
     const interactiveArea = document.getElementById('interactive-area');
-    
+    const leftHand = document.getElementById('left-hand');
+    const rightHand = document.getElementById('right-hand');
+    const celebration = document.getElementById('celebration');
+    const restartButton = document.getElementById('restart-button');
+    const moon = document.getElementById('moon');
+
     // --- Update Functions ---
+    function updateHands() {
+      const leftTransform = `translateX(${clicks * 30}px) translateY(${floatOffset}px) rotate(${15 - clicks * 1.5}deg) ${isHovering ? 'scale(1.05)' : 'scale(1)'}`;
+      const rightTransform = `translateX(-${clicks * 30}px) translateY(${floatOffset}px) rotate(${clicks * 1.5 - 15}deg) scale(-1, 1) ${isHovering ? 'scale(-1.05, 1.05)' : 'scale(-1, 1)'}`;
+      leftHand.style.transform = leftTransform;
+      rightHand.style.transform = rightTransform;
+      if(clicks > 0) {
+        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4)) drop-shadow(0 0 10px rgba(147, 51, 234, 0.3))';
+        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4)) drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))';
+      } else {
+        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))';
+        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))';
+      }
+    }
+    function updateBackground() {
+      // Keep background dark
+      container.style.background = 'linear-gradient(45deg, #0d0d0d, #1a1a1a)';
+    }
     function updateProgress() {
       const percent = (clicks / maxClicks) * 100;
       progressBar.style.width = percent + '%';
+      // Optional: update progress bar color subtly
+      progressBar.style.backgroundColor = `hsl(200, 10%, ${50 + clicks * 5}%)`;
     }
-    
-    function updateMessage() {
-      messageEl.textContent = messages[clicks] || "The void beckons...";
-    }
-    
-    function updateCosmicPositions() {
-      // Move stardust cosmic elements toward the center based on progress
-      const moveFactor = (clicks / maxClicks) * 50; // percentage movement
-      cosmicLeft.style.transform = `translate(${moveFactor}%, -50%)`;
-      cosmicRight.style.transform = `translate(-${moveFactor}%, -50%)`;
-    }
-    
-    function handleProgress() {
-      if (clicks < maxClicks) {
-        clicks++;
-        updateMessage();
-        updateProgress();
-        updateCosmicPositions();
-        if (clicks === maxClicks) {
-          formBlackHole();
-        }
-      }
-    }
-    
-    function formBlackHole() {
-      // Animate stardust, moon, and header text to be sucked in
-      cosmicLeft.classList.add('sucked');
-      cosmicRight.classList.add('sucked');
-      moon.classList.add('sucked');
-      header.classList.add('sucked');
-      
-      // After a short delay, reveal the blackhole
+
+    // --- Floating Effect ---
+    setInterval(() => {
+      floatOffset = Math.sin(Date.now() / 1000) * 10;
+      updateHands();
+    }, 50);
+
+    // --- Sparkle & Ripple Effects ---
+    function addSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.classList.add('sparkle');
+      const size = Math.random() * 10 + 5;
+      sparkle.style.width = size + 'px';
+      sparkle.style.height = size + 'px';
+      sparkle.style.left = x + 'px';
+      sparkle.style.top = y + 'px';
+      interactiveArea.appendChild(sparkle);
       setTimeout(() => {
-        blackhole.classList.add('grow');
-        // After the black hole forms, hide the stardust, moon, and header
-        setTimeout(() => {
-          cosmicLeft.style.display = 'none';
-          cosmicRight.style.display = 'none';
-          moon.style.display = 'none';
-          header.style.display = 'none';
-          restartButton.style.display = 'block';
-        }, 2000);
+        interactiveArea.removeChild(sparkle);
       }, 1000);
     }
-    
+    function addRipple(x, y) {
+      const ripple = document.createElement('div');
+      ripple.classList.add('ripple');
+      const size = Math.random() * 20 + 20;
+      ripple.style.width = size + 'px';
+      ripple.style.height = size + 'px';
+      ripple.style.left = (x - size / 2) + 'px';
+      ripple.style.top = (y - size / 2) + 'px';
+      interactiveArea.appendChild(ripple);
+      setTimeout(() => {
+        interactiveArea.removeChild(ripple);
+      }, 600);
+    }
+
+    // --- Progress Handling ---
+    function handleProgress() {
+      if(clicks < maxClicks) {
+        clicks++;
+        messageEl.textContent = messages[clicks];
+        updateProgress();
+        updateBackground();
+        // Add a few sparkles around the center
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        for(let i = 0; i < 3; i++) {
+          addSparkle(centerX + (Math.random() - 0.5) * 100, centerY + (Math.random() - 0.5) * 100);
+        }
+        updateHands();
+      }
+      if(clicks === maxClicks) {
+        showCelebration();
+      }
+    }
+
+    // --- Celebration ---
+    function showCelebration() {
+      celebration.style.display = 'flex';
+      // Create confetti pieces
+      for(let i = 0; i < 30; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        const left = Math.random() * 100;
+        const delay = Math.random() * 2;
+        const size = Math.random() * 8 + 4;
+        const colors = ['#EC4899', '#9333EA', '#7C3AED', '#DB2777'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.backgroundColor = color;
+        confetti.style.width = size + 'px';
+        confetti.style.height = size + 'px';
+        confetti.style.left = left + '%';
+        confetti.style.top = '-10%';
+        confetti.style.animationDuration = (3 + Math.random()) + 's';
+        confetti.style.animationDelay = delay + 's';
+        interactiveArea.appendChild(confetti);
+        setTimeout(() => {
+          if(confetti.parentElement) {
+            interactiveArea.removeChild(confetti);
+          }
+        }, 5000);
+      }
+    }
+
+    // --- Reset Function ---
     function resetAnimation() {
       clicks = 0;
-      updateMessage();
+      messageEl.textContent = 'Press Space or Click to begin your journey...';
       updateProgress();
-      // Reset stardust, moon, and header
-      cosmicLeft.classList.remove('sucked');
-      cosmicRight.classList.remove('sucked');
-      moon.classList.remove('sucked');
-      header.classList.remove('sucked');
-      cosmicLeft.style.display = 'block';
-      cosmicRight.style.display = 'block';
-      moon.style.display = 'block';
-      header.style.display = 'block';
-      
-      // Hide blackhole and reset its properties
-      blackhole.classList.remove('grow');
-      blackhole.style.opacity = 0;
-      blackhole.style.transform = 'translate(-50%, -50%) scale(0)';
-      
-      restartButton.style.display = 'none';
+      updateBackground();
+      updateHands();
+      celebration.style.display = 'none';
     }
-    
+
+    // --- Moon Rotation ---
+    moon.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering the interactive area click
+      moonRotation += 45; // Rotate by 45 degrees on each click
+      moon.style.transform = `rotate(${moonRotation}deg)`;
+    });
+
     // --- Event Listeners ---
-    interactiveArea.addEventListener('click', () => {
+    interactiveArea.addEventListener('click', (e) => {
+      const rect = interactiveArea.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      addRipple(x, y);
       handleProgress();
     });
-    
+    interactiveArea.addEventListener('mouseenter', () => {
+      isHovering = true;
+      updateHands();
+    });
+    interactiveArea.addEventListener('mouseleave', () => {
+      isHovering = false;
+      updateHands();
+    });
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.code === 'ArrowRight') {
+      if(e.code === 'Space' || e.code === 'ArrowRight') {
         handleProgress();
       }
     });
-    
     restartButton.addEventListener('click', resetAnimation);
-    
-    // Initial setup
-    updateMessage();
+
+    // --- Initial Setup ---
+    updateHands();
+    updateProgress();
+    updateBackground();
   </script>
 </body>
 </html>
