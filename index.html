@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Promise Day</title>
+  <title>Promise Day </title>
   <style>
     /* Basic Reset & Styling */
     html, body {
@@ -23,7 +23,7 @@
       /* Dark background */
       background: linear-gradient(45deg, #0d0d0d, #1a1a1a);
     }
-    /* Moonlight Overlay: simulates a soft spotlight from the moon */
+    /* Moonlight Overlay: enhanced for a realistic, pulsating glow */
     #moonlight {
       position: absolute;
       top: 0;
@@ -33,13 +33,20 @@
       pointer-events: none;
       background: radial-gradient(
         circle at calc(100% - 80px) 80px,
-        rgba(255, 255, 200, 0.6),
-        transparent 60%
+        rgba(255, 255, 200, 0.8),
+        rgba(255, 255, 200, 0.4) 50%,
+        transparent 80%
       );
       mix-blend-mode: screen;
       z-index: 0;
+      animation: moonFlicker 3s infinite;
     }
-    /* Moon Styling */
+    @keyframes moonFlicker {
+      0% { opacity: 0.95; }
+      50% { opacity: 1; }
+      100% { opacity: 0.95; }
+    }
+    /* Moon Styling: improved glow effect */
     .moon {
       position: absolute;
       top: 20px;
@@ -50,8 +57,8 @@
       background: radial-gradient(circle at 30% 30%, #fff, #ddd);
       cursor: pointer;
       transition: transform 1s ease;
-      /* Glowing effect */
-      box-shadow: 0 0 30px 10px rgba(255,255,200,0.7);
+      /* Enhanced glowing effect with layered box-shadows */
+      box-shadow: 0 0 40px 15px rgba(255,255,220,0.7), 0 0 80px 30px rgba(255,255,200,0.5);
       z-index: 1;
     }
     /* Header & Progress */
@@ -205,7 +212,7 @@
     <div id="moon" class="moon"></div>
     <div class="header">
       <div class="title">Promise Day</div>
-      <div class="message" id="message">Press Space or Click</div>
+      <div class="message" id="message">Press Space or Click to begin your journey...</div>
       <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
       </div>
@@ -220,7 +227,7 @@
               <stop offset="100%" stop-color="#7C3AED" stop-opacity="1"/>
             </linearGradient>
           </defs>
-          <g class="hand-svg">
+          <g class="hand">
             <path d="M10,50 Q20,50 30,50 L30,50" stroke="#9333EA" stroke-width="8" fill="none" />
             <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient1)" />
             <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient1)" />
@@ -230,7 +237,7 @@
           </g>
         </svg>
       </div>
-      <!-- Right Hand -->
+      <!-- Right Hand (mirrored) -->
       <div class="hand right-hand" id="right-hand">
         <svg width="150" height="150" viewBox="0 0 100 100">
           <defs>
@@ -239,7 +246,7 @@
               <stop offset="100%" stop-color="#DB2777" stop-opacity="1"/>
             </linearGradient>
           </defs>
-          <g class="hand-svg">
+          <g class="hand">
             <path d="M10,50 Q20,50 30,50 L30,50" stroke="#EC4899" stroke-width="8" fill="none" />
             <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient2)" />
             <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient2)" />
@@ -249,16 +256,18 @@
           </g>
         </svg>
       </div>
+      <!-- Final celebration overlay -->
+      <div class="celebration animate-fade-in" id="celebration" style="display: none;">
+        <div class="icon" id="icon-heart">❤️</div>
+        <div class="icon" id="icon-sparkle">✨</div>
+        <div class="icon" id="icon-dazzle">💫</div>
+      </div>
     </div>
-    <!-- Celebration Overlay -->
-    <div class="celebration animate-fade-in" id="celebration" style="display: none;">
-      <div class="icon" id="icon-heart">❤️</div>
-      <div class="icon" id="icon-sparkle">✨</div>
-      <div class="icon" id="icon-dazzle">💫</div>
-      <button class="restart-button" id="restart-button">Start Again</button>
+    <div class="restart-button" id="restart-button" style="display: none;">
+      Start Again
     </div>
   </div>
-
+  
   <script>
     // --- State Variables ---
     let clicks = 0;
@@ -278,7 +287,7 @@
       'One last step...',
       'Together forever! ❤️'
     ];
-
+    
     // --- Element References ---
     const container = document.getElementById('container');
     const messageEl = document.getElementById('message');
@@ -289,7 +298,7 @@
     const celebration = document.getElementById('celebration');
     const restartButton = document.getElementById('restart-button');
     const moon = document.getElementById('moon');
-
+    
     // --- Update Functions ---
     function updateHands() {
       const leftTransform = `translateX(${clicks * 30}px) translateY(${floatOffset}px) rotate(${15 - clicks * 1.5}deg) ${isHovering ? 'scale(1.05)' : 'scale(1)'}`;
@@ -304,23 +313,25 @@
         rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))';
       }
     }
+    
     function updateBackground() {
       // Keep background dark
       container.style.background = 'linear-gradient(45deg, #0d0d0d, #1a1a1a)';
     }
+    
     function updateProgress() {
       const percent = (clicks / maxClicks) * 100;
       progressBar.style.width = percent + '%';
       // Optional: update progress bar color subtly
       progressBar.style.backgroundColor = `hsl(200, 10%, ${50 + clicks * 5}%)`;
     }
-
+    
     // --- Floating Effect ---
     setInterval(() => {
       floatOffset = Math.sin(Date.now() / 1000) * 10;
       updateHands();
     }, 50);
-
+    
     // --- Sparkle & Ripple Effects ---
     function addSparkle(x, y) {
       const sparkle = document.createElement('div');
@@ -335,6 +346,7 @@
         interactiveArea.removeChild(sparkle);
       }, 1000);
     }
+    
     function addRipple(x, y) {
       const ripple = document.createElement('div');
       ripple.classList.add('ripple');
@@ -348,7 +360,7 @@
         interactiveArea.removeChild(ripple);
       }, 600);
     }
-
+    
     // --- Progress Handling ---
     function handleProgress() {
       if(clicks < maxClicks) {
@@ -368,7 +380,7 @@
         showCelebration();
       }
     }
-
+    
     // --- Celebration ---
     function showCelebration() {
       celebration.style.display = 'flex';
@@ -396,7 +408,7 @@
         }, 5000);
       }
     }
-
+    
     // --- Reset Function ---
     function resetAnimation() {
       clicks = 0;
@@ -406,14 +418,14 @@
       updateHands();
       celebration.style.display = 'none';
     }
-
+    
     // --- Moon Rotation ---
     moon.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent triggering the interactive area click
       moonRotation += 45; // Rotate by 45 degrees on each click
       moon.style.transform = `rotate(${moonRotation}deg)`;
     });
-
+    
     // --- Event Listeners ---
     interactiveArea.addEventListener('click', (e) => {
       const rect = interactiveArea.getBoundingClientRect();
@@ -422,22 +434,26 @@
       addRipple(x, y);
       handleProgress();
     });
+    
     interactiveArea.addEventListener('mouseenter', () => {
       isHovering = true;
       updateHands();
     });
+    
     interactiveArea.addEventListener('mouseleave', () => {
       isHovering = false;
       updateHands();
     });
+    
     window.addEventListener('keydown', (e) => {
       if(e.code === 'Space' || e.code === 'ArrowRight') {
         handleProgress();
       }
     });
+    
     restartButton.addEventListener('click', resetAnimation);
-
-    // --- Initial Setup ---
+    
+    // Initial Setup
     updateHands();
     updateProgress();
     updateBackground();
