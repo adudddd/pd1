@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Promise Day with Enhanced Moonlight</title>
+  <title>Promise Day </title>
   <style>
     /* Basic Reset & Styling */
     html, body {
@@ -20,10 +20,10 @@
       align-items: center;
       justify-content: center;
       height: 100%;
+      /* Dark background */
       background: linear-gradient(45deg, #0d0d0d, #1a1a1a);
     }
-
-    /* Enhanced Moonlight Effect */
+    /* Moonlight Overlay: enhanced for a realistic, pulsating glow */
     #moonlight {
       position: absolute;
       top: 0;
@@ -31,34 +31,22 @@
       width: 100%;
       height: 100%;
       pointer-events: none;
-      background: 
-        radial-gradient(
-          circle at calc(100% - 80px) 80px,
-          rgba(255, 255, 240, 0.15) 0%,
-          rgba(255, 255, 240, 0.1) 20%,
-          rgba(255, 255, 240, 0.05) 40%,
-          transparent 70%
-        ),
-        radial-gradient(
-          circle at calc(100% - 80px) 80px,
-          rgba(255, 255, 220, 0.4) 0%,
-          rgba(255, 255, 220, 0.2) 30%,
-          rgba(255, 255, 220, 0.1) 50%,
-          transparent 70%
-        );
+      background: radial-gradient(
+        circle at calc(100% - 80px) 80px,
+        rgba(255, 255, 200, 0.8),
+        rgba(255, 255, 200, 0.4) 50%,
+        transparent 80%
+      );
       mix-blend-mode: screen;
       z-index: 0;
-      animation: moonlightPulse 8s infinite;
+      animation: moonFlicker 3s infinite;
     }
-    @keyframes moonlightPulse {
-      0% { opacity: 0.92; }
-      25% { opacity: 0.97; }
+    @keyframes moonFlicker {
+      0% { opacity: 0.95; }
       50% { opacity: 1; }
-      75% { opacity: 0.95; }
-      100% { opacity: 0.92; }
+      100% { opacity: 0.95; }
     }
-
-    /* Enhanced Moon Styling */
+    /* Moon Styling: improved glow effect */
     .moon {
       position: absolute;
       top: 20px;
@@ -66,61 +54,13 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background: 
-        radial-gradient(circle at 30% 30%,
-          #ffffff 0%,
-          #f0f0f0 20%,
-          #e0e0e0 40%,
-          #d0d0d0 60%,
-          #c0c0c0 80%
-        ),
-        radial-gradient(circle at 70% 70%,
-          rgba(255, 255, 255, 0.8) 0%,
-          rgba(255, 255, 255, 0.5) 50%
-        );
+      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
       cursor: pointer;
       transition: transform 1s ease;
-      box-shadow: 
-        inset -10px -10px 20px rgba(0, 0, 0, 0.2),
-        0 0 40px 5px rgba(255, 255, 220, 0.4),
-        0 0 80px 10px rgba(255, 255, 200, 0.3),
-        0 0 120px 20px rgba(255, 255, 200, 0.2);
+      /* Enhanced glowing effect with layered box-shadows */
+      box-shadow: 0 0 40px 15px rgba(255,255,220,0.7), 0 0 80px 30px rgba(255,255,200,0.5);
       z-index: 1;
-      position: relative;
-      overflow: hidden;
     }
-    /* Moon Crater Effect */
-    .moon::before {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.1) 0%, transparent 10%),
-        radial-gradient(circle at 75% 45%, rgba(0, 0, 0, 0.1) 0%, transparent 8%),
-        radial-gradient(circle at 35% 65%, rgba(0, 0, 0, 0.1) 0%, transparent 12%);
-    }
-    /* Atmospheric Haze */
-    .moon::after {
-      content: '';
-      position: absolute;
-      top: -20%;
-      left: -20%;
-      width: 140%;
-      height: 140%;
-      background: radial-gradient(
-        circle at center,
-        rgba(255, 255, 255, 0.2) 0%,
-        transparent 70%
-      );
-      animation: hazeFloat 10s infinite;
-    }
-    @keyframes hazeFloat {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.1); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
     /* Header & Progress */
     .header {
       text-align: center;
@@ -375,20 +315,24 @@
     }
     
     function updateBackground() {
+      // Keep background dark
       container.style.background = 'linear-gradient(45deg, #0d0d0d, #1a1a1a)';
     }
     
     function updateProgress() {
       const percent = (clicks / maxClicks) * 100;
       progressBar.style.width = percent + '%';
+      // Optional: update progress bar color subtly
       progressBar.style.backgroundColor = `hsl(200, 10%, ${50 + clicks * 5}%)`;
     }
     
+    // --- Floating Effect ---
     setInterval(() => {
       floatOffset = Math.sin(Date.now() / 1000) * 10;
       updateHands();
     }, 50);
     
+    // --- Sparkle & Ripple Effects ---
     function addSparkle(x, y) {
       const sparkle = document.createElement('div');
       sparkle.classList.add('sparkle');
@@ -417,12 +361,14 @@
       }, 600);
     }
     
+    // --- Progress Handling ---
     function handleProgress() {
       if(clicks < maxClicks) {
         clicks++;
         messageEl.textContent = messages[clicks];
         updateProgress();
         updateBackground();
+        // Add a few sparkles around the center
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
         for(let i = 0; i < 3; i++) {
@@ -435,8 +381,10 @@
       }
     }
     
+    // --- Celebration ---
     function showCelebration() {
       celebration.style.display = 'flex';
+      // Create confetti pieces
       for(let i = 0; i < 30; i++) {
         const confetti = document.createElement('div');
         confetti.classList.add('confetti');
@@ -461,6 +409,7 @@
       }
     }
     
+    // --- Reset Function ---
     function resetAnimation() {
       clicks = 0;
       messageEl.textContent = 'Press Space or Click to begin your journey...';
@@ -470,12 +419,14 @@
       celebration.style.display = 'none';
     }
     
+    // --- Moon Rotation ---
     moon.addEventListener('click', (e) => {
-      e.stopPropagation();
-      moonRotation += 45;
+      e.stopPropagation(); // Prevent triggering the interactive area click
+      moonRotation += 45; // Rotate by 45 degrees on each click
       moon.style.transform = `rotate(${moonRotation}deg)`;
     });
     
+    // --- Event Listeners ---
     interactiveArea.addEventListener('click', (e) => {
       const rect = interactiveArea.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -502,6 +453,7 @@
     
     restartButton.addEventListener('click', resetAnimation);
     
+    // Initial Setup
     updateHands();
     updateProgress();
     updateBackground();
