@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Promise Day</title>
+  <title>Promise Day </title>
   <style>
     /* Basic Reset & Styling */
     html, body {
@@ -14,15 +14,29 @@
       overflow: hidden;
     }
     .container {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100%;
       background: linear-gradient(45deg, hsl(280, 70%, 90%), hsl(320, 70%, 90%));
-      position: relative;
       transition: background-image 0.5s ease-out;
     }
+    /* Moon Styling */
+    .moon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+      cursor: pointer;
+      transition: transform 1s ease;
+      z-index: 1;
+    }
+    /* Header & Progress */
     .header {
       text-align: center;
       margin-bottom: 20px;
@@ -58,6 +72,7 @@
       background-color: hsl(280, 70%, 60%);
       transition: width 0.5s ease-out, background-color 0.5s ease-out;
     }
+    /* Interactive Area & Hands */
     .interactive-area {
       position: relative;
       width: 90%;
@@ -65,6 +80,7 @@
       height: 400px;
       cursor: pointer;
       overflow: hidden;
+      z-index: 2;
     }
     .hand {
       position: absolute;
@@ -153,10 +169,21 @@
         opacity: 0;
       }
     }
+    /* Fade-in Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
   </style>
 </head>
 <body>
   <div class="container" id="container">
+    <!-- Moon Element -->
+    <div id="moon" class="moon"></div>
+
     <div class="header">
       <div class="title">Promise Day</div>
       <div class="message" id="message">Press Space or Click to begin your journey...</div>
@@ -205,7 +232,7 @@
       </div>
     </div>
     <!-- Celebration Overlay -->
-    <div class="celebration" id="celebration" style="display: none;">
+    <div class="celebration animate-fade-in" id="celebration" style="display: none;">
       <div class="icon" id="icon-heart">❤️</div>
       <div class="icon" id="icon-sparkle">✨</div>
       <div class="icon" id="icon-dazzle">💫</div>
@@ -219,6 +246,7 @@
     const maxClicks = 10;
     let floatOffset = 0;
     let isHovering = false;
+    let moonRotation = 0;
     const messages = [
       'Every journey begins with a single step...',
       'Distance is just a test of love\'s strength...',
@@ -241,6 +269,7 @@
     const rightHand = document.getElementById('right-hand');
     const celebration = document.getElementById('celebration');
     const restartButton = document.getElementById('restart-button');
+    const moon = document.getElementById('moon');
 
     // --- Update Functions ---
     function updateHands() {
@@ -248,7 +277,6 @@
       const rightTransform = `translateX(-${clicks * 30}px) translateY(${floatOffset}px) rotate(${clicks * 1.5 - 15}deg) scale(-1, 1) ${isHovering ? 'scale(-1.05, 1.05)' : 'scale(-1, 1)'}`;
       leftHand.style.transform = leftTransform;
       rightHand.style.transform = rightTransform;
-      // Update drop shadows if progress has begun
       if(clicks > 0) {
         leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1)) drop-shadow(0 0 10px rgba(147, 51, 234, 0.3))';
         rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1)) drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))';
@@ -343,7 +371,6 @@
         confetti.style.animationDuration = (3 + Math.random()) + 's';
         confetti.style.animationDelay = delay + 's';
         interactiveArea.appendChild(confetti);
-        // Remove confetti after a while
         setTimeout(() => {
           if(confetti.parentElement) {
             interactiveArea.removeChild(confetti);
@@ -361,6 +388,13 @@
       updateHands();
       celebration.style.display = 'none';
     }
+
+    // --- Moon Rotation ---
+    moon.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering the interactive area click
+      moonRotation += 45; // Rotate by 45 degrees on each click
+      moon.style.transform = `rotate(${moonRotation}deg)`;
+    });
 
     // --- Event Listeners ---
     interactiveArea.addEventListener('click', (e) => {
