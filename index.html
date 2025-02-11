@@ -1,0 +1,344 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+const PromiseHands = () => {
+  const [clicks, setClicks] = useState(0);
+  const [message, setMessage] = useState('Press Space or Click to begin your journey...');
+  const [sparkles, setSparkles] = useState([]);
+  const [ripples, setRipples] = useState([]);
+  const [isHovering, setIsHovering] = useState(false);
+  const [floatOffset, setFloatOffset] = useState(0);
+  const maxClicks = 10;
+  const containerRef = useRef(null);
+
+  // Floating animation for a gentle up-and-down motion
+  useEffect(() => {
+    const floatInterval = setInterval(() => {
+      setFloatOffset(Math.sin(Date.now() / 1000) * 10);
+    }, 50);
+    return () => clearInterval(floatInterval);
+  }, []);
+
+  // Keyboard support for Space and ArrowRight keys
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowRight') {
+        handleProgress();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [clicks]);
+
+  // Update hand styles with smooth transforms and hover glow
+  const leftHandStyle = {
+    transform: `
+      translateX(${clicks * 30}px) 
+      translateY(${floatOffset}px) 
+      rotate(${15 - clicks * 1.5}deg)
+      ${isHovering ? 'scale(1.05)' : 'scale(1)'}
+    `,
+    transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    filter: `drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))
+             ${clicks > 0 ? 'drop-shadow(0 0 10px rgba(147, 51, 234, 0.3))' : ''}`
+  };
+
+  const rightHandStyle = {
+    transform: `
+      translateX(-${clicks * 30}px) 
+      translateY(${floatOffset}px) 
+      rotate(${clicks * 1.5 - 15}deg) 
+      scale(-1, 1)
+      ${isHovering ? 'scale(-1.05, 1.05)' : 'scale(-1, 1)'}
+    `,
+    transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    filter: `drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1))
+             ${clicks > 0 ? 'drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))' : ''}`
+  };
+
+  // Add a sparkle effect between the hands
+  const addSparkle = (x, y) => {
+    const newSparkle = {
+      id: Date.now(),
+      x,
+      y,
+      size: Math.random() * 10 + 5,
+    };
+    setSparkles((prev) => [...prev, newSparkle]);
+    setTimeout(() => {
+      setSparkles((prev) => prev.filter((s) => s.id !== newSparkle.id));
+    }, 1000);
+  };
+
+  // Add a ripple effect at the click location (relative to the container)
+  const addRipple = (x, y) => {
+    const newRipple = {
+      id: Date.now(),
+      x,
+      y,
+      size: Math.random() * 20 + 20,
+    };
+    setRipples((prev) => [...prev, newRipple]);
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== newRipple.id));
+    }, 600);
+  };
+
+  // Handle progression of the animation & add sparkles
+  const handleProgress = () => {
+    if (clicks < maxClicks) {
+      setClicks((prev) => prev + 1);
+      updateMessage();
+      // Add sparkles at a randomized area around the center
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      for (let i = 0; i < 3; i++) {
+        addSparkle(
+          centerX + (Math.random() - 0.5) * 100,
+          centerY + (Math.random() - 0.5) * 100
+        );
+      }
+    }
+  };
+
+  // Update the journey message as progress is made
+  const updateMessage = () => {
+    const messages = [
+      'Every journey begins with a single step...',
+      'Distance is just a test of love\'s strength...',
+      'Keep going, your love grows stronger...',
+      'The space between us grows smaller...',
+      'Each click bridges the gap...',
+      'Your hearts beat as one...',
+      'Almost there, feel the connection...',
+      'The promise strengthens...',
+      'One last step...',
+      'Together forever! ❤️',
+    ];
+    setMessage(messages[clicks]);
+  };
+
+  // Determine progress bar color based on current progress
+  const getProgressColor = () => {
+    const hue = (clicks / maxClicks) * 60 + 280; // Transitions from purple to pink
+    return `hsl(${hue}, 70%, 60%)`;
+  };
+
+  return (
+    <div
+      className="flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(45deg, 
+          hsl(${280 + (clicks / maxClicks) * 40}, 70%, 90%), 
+          hsl(${320 + (clicks / maxClicks) * 40}, 70%, 90%))`,
+      }}
+    >
+      {/* Inline CSS for keyframes */}
+      <style>{`
+        @keyframes rippleAnim {
+          0% {
+            transform: scale(0);
+            opacity: 0.7;
+          }
+          100% {
+            transform: scale(4);
+            opacity: 0;
+          }
+        }
+        @keyframes fall {
+          0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(110vh) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out;
+        }
+      `}</style>
+
+      {/* Header & progress */}
+      <div className="text-center mb-8 relative">
+        <h1 className="text-4xl font-bold text-purple-600 mb-4 animate-pulse">
+          Promise Day
+        </h1>
+        <p className="text-xl text-gray-700 font-medium animate-fade-in">
+          {message}
+        </p>
+        <div className="mt-4 w-64 h-2 bg-gray-200 rounded-full mx-auto overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all duration-500 ease-out"
+            style={{
+              width: `${(clicks / maxClicks) * 100}%`,
+              backgroundColor: getProgressColor(),
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Interactive container */}
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-3xl h-96 cursor-pointer"
+        onClick={(e) => {
+          // Calculate ripple position relative to container
+          const rect = containerRef.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          addRipple(x, y);
+          handleProgress();
+        }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        {/* Sparkles */}
+        {sparkles.map((sparkle) => (
+          <div
+            key={sparkle.id}
+            className="absolute animate-ping"
+            style={{
+              left: sparkle.x,
+              top: sparkle.y,
+              width: sparkle.size,
+              height: sparkle.size,
+              backgroundColor: 'rgba(236, 72, 153, 0.3)',
+              borderRadius: '50%',
+            }}
+          />
+        ))}
+
+        {/* Ripples */}
+        {ripples.map((ripple) => (
+          <div
+            key={ripple.id}
+            className="absolute"
+            style={{
+              left: ripple.x - ripple.size / 2,
+              top: ripple.y - ripple.size / 2,
+              width: ripple.size,
+              height: ripple.size,
+              borderRadius: '50%',
+              backgroundColor: 'rgba(236, 72, 153, 0.3)',
+              pointerEvents: 'none',
+              animation: 'rippleAnim 0.6s ease-out',
+            }}
+          />
+        ))}
+
+        {/* Left Hand */}
+        <div
+          className="absolute left-0 top-1/2 transform -translate-y-1/2"
+          style={leftHandStyle}
+        >
+          <svg width="150" height="150" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="handGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#9333EA', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: '#7C3AED', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+            <g className="hand">
+              {/* Arm extension */}
+              <path d="M10,50 Q20,50 30,50 L30,50" stroke="#9333EA" strokeWidth="8" fill="none" />
+              {/* Palm */}
+              <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient1)" />
+              {/* Fingers */}
+              <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient1)" />
+              <path d="M55,25 Q60,20 65,25 C70,35 75,45 70,65" fill="url(#handGradient1)" />
+              <path d="M65,30 Q70,25 75,30 C80,40 80,50 75,60" fill="url(#handGradient1)" />
+              <path d="M75,35 Q80,30 85,35 C85,40 85,45 80,55" fill="url(#handGradient1)" />
+            </g>
+          </svg>
+        </div>
+
+        {/* Right Hand (mirrored) */}
+        <div
+          className="absolute right-0 top-1/2 transform -translate-y-1/2"
+          style={rightHandStyle}
+        >
+          <svg width="150" height="150" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="handGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style={{ stopColor: '#EC4899', stopOpacity: 1 }} />
+                <stop offset="100%" style={{ stopColor: '#DB2777', stopOpacity: 1 }} />
+              </linearGradient>
+            </defs>
+            <g className="hand">
+              <path d="M10,50 Q20,50 30,50 L30,50" stroke="#EC4899" strokeWidth="8" fill="none" />
+              <path d="M30,50 Q35,70 60,70 L80,55 Q85,50 80,45 L60,30 Q40,45 30,50 Z" fill="url(#handGradient2)" />
+              <path d="M45,30 Q50,25 55,30 C60,40 65,50 60,70" fill="url(#handGradient2)" />
+              <path d="M55,25 Q60,20 65,25 C70,35 75,45 70,65" fill="url(#handGradient2)" />
+              <path d="M65,30 Q70,25 75,30 C80,40 80,50 75,60" fill="url(#handGradient2)" />
+              <path d="M75,35 Q80,30 85,35 C85,40 85,45 80,55" fill="url(#handGradient2)" />
+            </g>
+          </svg>
+        </div>
+
+        {/* Final celebration overlay */}
+        {clicks === maxClicks && (
+          <>
+            {/* Confetti shower */}
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: 30 }).map((_, i) => {
+                const left = Math.random() * 100;
+                const delay = Math.random() * 2;
+                const size = Math.random() * 8 + 4;
+                const colors = ['#EC4899', '#9333EA', '#7C3AED', '#DB2777'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      position: 'absolute',
+                      left: `${left}%`,
+                      top: '-10%',
+                      width: size,
+                      height: size,
+                      backgroundColor: color,
+                      opacity: 0.8,
+                      borderRadius: '50%',
+                      animation: `fall ${3 + Math.random()}s ${delay}s linear infinite`,
+                    }}
+                  />
+                );
+              })}
+            </div>
+            {/* Celebration icons */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <div className="text-6xl animate-bounce">❤️</div>
+              <div className="text-4xl animate-ping">✨</div>
+              <div className="text-4xl animate-pulse">💫</div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Final message & restart button */}
+      {clicks === maxClicks && (
+        <div className="mt-8 text-center animate-fade-in">
+          <h2 className="text-2xl font-bold text-purple-600">Promise Sealed with Love!</h2>
+          <p className="text-gray-700 mt-2 italic">
+            "In your hands, I place my heart and promise"
+          </p>
+          <button
+            onClick={() => {
+              setClicks(0);
+              setMessage('Press Space or Click to begin your journey...');
+            }}
+            className="mt-4 px-6 py-2 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors"
+          >
+            Start Again
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PromiseHands;
