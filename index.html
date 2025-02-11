@@ -30,6 +30,7 @@
       z-index: 10;
       text-align: center;
       margin-bottom: 20px;
+      transition: transform 1s ease, opacity 1s ease;
     }
     .title {
       font-size: 2.5rem;
@@ -63,27 +64,32 @@
       overflow: hidden;
       z-index: 5;
     }
-    /* Cosmic Halves (Universe Elements) */
+    /* Stardust Cosmic Elements */
     .cosmic {
       position: absolute;
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
       transition: transform 1s ease, opacity 1s ease;
     }
     #cosmic-left {
-      background: radial-gradient(circle, #6a3093, #a044ff);
+      width: 200px;
+      height: 150px;
       left: 5%;
       top: 50%;
       transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.8), rgba(170,170,255,0) 70%);
+      clip-path: polygon(0% 50%, 20% 20%, 80% 10%, 100% 50%, 80% 90%, 20% 90%);
+      filter: blur(4px);
     }
     #cosmic-right {
-      background: radial-gradient(circle, #f12711, #f5af19);
+      width: 200px;
+      height: 150px;
       right: 5%;
       top: 50%;
       transform: translate(50%, -50%);
+      background: radial-gradient(ellipse at center, rgba(255,255,255,0.8), rgba(255,170,170,0) 70%);
+      clip-path: polygon(0% 50%, 20% 20%, 80% 10%, 100% 50%, 80% 90%, 20% 90%);
+      filter: blur(4px);
     }
-    /* Moon */
+    /* Moon positioned in upper left */
     .moon {
       position: absolute;
       width: 100px;
@@ -91,8 +97,8 @@
       border-radius: 50%;
       background: radial-gradient(circle, #fff, #ccc);
       top: 10%;
-      right: 10%;
-      box-shadow: 0 0 20px 5px rgba(255, 255, 200, 0.7);
+      left: 10%;
+      box-shadow: 0 0 20px 5px rgba(255,255,200,0.7);
       transition: transform 1s ease, opacity 1s ease;
       z-index: 6;
     }
@@ -122,7 +128,7 @@
         opacity: 1;
       }
     }
-    /* Sucked In Animation */
+    /* Sucked-in Animation */
     .sucked {
       transform: translate(0, 0) scale(0);
       opacity: 0;
@@ -147,7 +153,7 @@
 </head>
 <body>
   <div class="container" id="container">
-    <div class="header">
+    <div class="header" id="header">
       <h1 class="title">Cosmic Convergence</h1>
       <div class="message" id="message">
         Click or press Space to begin the cosmic journey...
@@ -157,12 +163,12 @@
       </div>
     </div>
     <div class="interactive-area" id="interactive-area">
-      <!-- Cosmic halves represent pieces of the universe -->
+      <!-- Stardust cosmic elements -->
       <div class="cosmic" id="cosmic-left"></div>
       <div class="cosmic" id="cosmic-right"></div>
-      <!-- The Moon, which will eventually be sucked in -->
+      <!-- The Moon in the upper left -->
       <div class="moon" id="moon"></div>
-      <!-- Blackhole element (hidden initially) -->
+      <!-- Blackhole element -->
       <div class="blackhole" id="blackhole"></div>
     </div>
     <button class="restart-button" id="restart-button" style="display: none;">
@@ -177,17 +183,18 @@
     const messages = [
       "The cosmos stirs with ancient secrets...",
       "Galaxies whisper as they drift apart...",
-      "Stardust begins to coalesce...",
-      "A gravitational dance unfolds...",
-      "Celestial bodies gravitate toward destiny...",
-      "The universe shifts in silent rhythm...",
-      "Cosmic forces intensify...",
+      "Stardust begins to scatter in the void...",
+      "Cosmic energy flows like a river...",
+      "Nebulae shimmer with ephemeral light...",
+      "Celestial winds guide the particles...",
+      "A gravitational pull grows ever stronger...",
       "Energy converges into a singular point...",
       "A vortex of infinite power emerges...",
-      "The black hole consumes all..."
+      "The black hole consumes all, even the words..."
     ];
     
     // --- Element References ---
+    const header = document.getElementById('header');
     const messageEl = document.getElementById('message');
     const progressBar = document.getElementById('progress-bar');
     const cosmicLeft = document.getElementById('cosmic-left');
@@ -208,7 +215,7 @@
     }
     
     function updateCosmicPositions() {
-      // Move cosmic halves toward the center based on progress
+      // Move stardust cosmic elements toward the center based on progress
       const moveFactor = (clicks / maxClicks) * 50; // percentage movement
       cosmicLeft.style.transform = `translate(${moveFactor}%, -50%)`;
       cosmicRight.style.transform = `translate(-${moveFactor}%, -50%)`;
@@ -227,19 +234,21 @@
     }
     
     function formBlackHole() {
-      // Animate cosmic halves and moon to be sucked in
+      // Animate stardust, moon, and header text to be sucked in
       cosmicLeft.classList.add('sucked');
       cosmicRight.classList.add('sucked');
       moon.classList.add('sucked');
+      header.classList.add('sucked');
       
       // After a short delay, reveal the blackhole
       setTimeout(() => {
         blackhole.classList.add('grow');
-        // After the black hole forms, hide the cosmic elements entirely
+        // After the black hole forms, hide the stardust, moon, and header
         setTimeout(() => {
           cosmicLeft.style.display = 'none';
           cosmicRight.style.display = 'none';
           moon.style.display = 'none';
+          header.style.display = 'none';
           restartButton.style.display = 'block';
         }, 2000);
       }, 1000);
@@ -249,13 +258,15 @@
       clicks = 0;
       updateMessage();
       updateProgress();
-      // Reset cosmic halves and moon
+      // Reset stardust, moon, and header
       cosmicLeft.classList.remove('sucked');
       cosmicRight.classList.remove('sucked');
       moon.classList.remove('sucked');
+      header.classList.remove('sucked');
       cosmicLeft.style.display = 'block';
       cosmicRight.style.display = 'block';
       moon.style.display = 'block';
+      header.style.display = 'block';
       
       // Hide blackhole and reset its properties
       blackhole.classList.remove('grow');
