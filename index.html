@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Promise Day </title>
+  <title>Promise Day</title>
   <style>
     /* Basic Reset & Styling */
     html, body {
@@ -20,8 +20,24 @@
       align-items: center;
       justify-content: center;
       height: 100%;
-      background: linear-gradient(45deg, hsl(280, 70%, 90%), hsl(320, 70%, 90%));
-      transition: background-image 0.5s ease-out;
+      /* Dark background */
+      background: linear-gradient(45deg, #0d0d0d, #1a1a1a);
+    }
+    /* Moonlight Overlay: simulates a soft spotlight from the moon */
+    #moonlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(
+        circle at calc(100% - 80px) 80px,
+        rgba(255, 255, 200, 0.6),
+        transparent 60%
+      );
+      mix-blend-mode: screen;
+      z-index: 0;
     }
     /* Moon Styling */
     .moon {
@@ -31,9 +47,11 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+      background: radial-gradient(circle at 30% 30%, #fff, #ddd);
       cursor: pointer;
       transition: transform 1s ease;
+      /* Glowing effect */
+      box-shadow: 0 0 30px 10px rgba(255,255,200,0.7);
       z-index: 1;
     }
     /* Header & Progress */
@@ -45,7 +63,7 @@
     .title {
       font-size: 2.5rem;
       font-weight: bold;
-      color: #9333ea;
+      color: #fff;
       animation: pulse 2s infinite;
     }
     @keyframes pulse {
@@ -55,13 +73,13 @@
     }
     .message {
       font-size: 1.25rem;
-      color: #555;
+      color: #bbb;
       margin-top: 10px;
     }
     .progress-container {
       width: 300px;
       height: 10px;
-      background: #eee;
+      background: #333;
       border-radius: 5px;
       overflow: hidden;
       margin: 20px auto;
@@ -69,7 +87,7 @@
     .progress-bar {
       height: 100%;
       width: 0%;
-      background-color: hsl(280, 70%, 60%);
+      background-color: #888;
       transition: width 0.5s ease-out, background-color 0.5s ease-out;
     }
     /* Interactive Area & Hands */
@@ -87,7 +105,7 @@
       top: 50%;
       transform: translateY(-50%);
       transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
     }
     .left-hand {
       left: 0;
@@ -128,7 +146,7 @@
       align-items: center;
       justify-content: center;
       z-index: 3;
-      background: rgba(255,255,255,0.6);
+      background: rgba(0,0,0,0.7);
     }
     .celebration .icon {
       font-size: 3rem;
@@ -181,9 +199,10 @@
 </head>
 <body>
   <div class="container" id="container">
+    <!-- Moonlight Overlay -->
+    <div id="moonlight"></div>
     <!-- Moon Element -->
     <div id="moon" class="moon"></div>
-
     <div class="header">
       <div class="title">Promise Day</div>
       <div class="message" id="message">Press Space or Click to begin your journey...</div>
@@ -278,23 +297,22 @@
       leftHand.style.transform = leftTransform;
       rightHand.style.transform = rightTransform;
       if(clicks > 0) {
-        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1)) drop-shadow(0 0 10px rgba(147, 51, 234, 0.3))';
-        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1)) drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))';
+        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4)) drop-shadow(0 0 10px rgba(147, 51, 234, 0.3))';
+        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4)) drop-shadow(0 0 10px rgba(236, 72, 153, 0.3))';
       } else {
-        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))';
-        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.1))';
+        leftHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))';
+        rightHand.style.filter = 'drop-shadow(0 4px 6px rgba(0,0,0,0.4))';
       }
     }
     function updateBackground() {
-      const hue1 = 280 + (clicks / maxClicks) * 40;
-      const hue2 = 320 + (clicks / maxClicks) * 40;
-      container.style.backgroundImage = `linear-gradient(45deg, hsl(${hue1}, 70%, 90%), hsl(${hue2}, 70%, 90%))`;
+      // Keep background dark
+      container.style.background = 'linear-gradient(45deg, #0d0d0d, #1a1a1a)';
     }
     function updateProgress() {
       const percent = (clicks / maxClicks) * 100;
       progressBar.style.width = percent + '%';
-      const hue = (clicks / maxClicks) * 60 + 280;
-      progressBar.style.backgroundColor = `hsl(${hue}, 70%, 60%)`;
+      // Optional: update progress bar color subtly
+      progressBar.style.backgroundColor = `hsl(200, 10%, ${50 + clicks * 5}%)`;
     }
 
     // --- Floating Effect ---
